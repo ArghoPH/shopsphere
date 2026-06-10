@@ -143,10 +143,10 @@ onMounted(fetchCart);
                         </div>
                     </div>
 
-                    <button
-                        class="mt-6 w-full rounded-2xl bg-slate-950 px-6 py-4 text-sm font-bold text-white transition hover:bg-blue-600">
+                    <RouterLink to="/checkout"
+                        class="mt-6 block w-full rounded-2xl bg-slate-950 px-6 py-4 text-center text-sm font-bold text-white transition hover:bg-blue-600">
                         Proceed to Checkout
-                    </button>
+                    </RouterLink>
                 </aside>
             </section>
         </main>

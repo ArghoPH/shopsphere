@@ -15,6 +15,7 @@ public class AppDbContext : DbContext
     public DbSet<CartItem> CartItems => Set<CartItem>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
+
     {
         base.OnModelCreating(modelBuilder);
 
@@ -25,5 +26,16 @@ public class AppDbContext : DbContext
         modelBuilder.Entity<CartItem>()
             .Property(ci => ci.Price)
             .HasColumnType("numeric(10,2)");
+
+        modelBuilder.Entity<Order>()
+            .Property(o => o.TotalAmount)
+            .HasColumnType("numeric(10,2)");
+
+        modelBuilder.Entity<OrderItem>()
+            .Property(oi => oi.Price)
+            .HasColumnType("numeric(10,2)");
     }
+
+    public DbSet<Order> Orders => Set<Order>();
+    public DbSet<OrderItem> OrderItems => Set<OrderItem>();
 }
