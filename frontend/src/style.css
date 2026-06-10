@@ -15,6 +15,26 @@ body {
   margin: 0;
 }
 
+.dropdown-slide-enter-active {
+  transition: all 0.22s ease-out;
+}
+
+.dropdown-slide-leave-active {
+  transition: all 0.16s ease-in;
+}
+
+.dropdown-slide-enter-from,
+.dropdown-slide-leave-to {
+  opacity: 0;
+  transform: translateY(-8px) scale(0.96);
+}
+
+.dropdown-slide-enter-to,
+.dropdown-slide-leave-from {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+
 button,
 input,
 textarea,
