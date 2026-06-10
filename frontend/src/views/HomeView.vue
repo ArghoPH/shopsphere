@@ -54,9 +54,8 @@ onMounted(() => {
                     <a href="#" class="transition hover:text-white">Products</a>
                     <RouterLink to="/cart" class="transition hover:text-white">Cart</RouterLink>
                     <RouterLink to="/orders" class="transition hover:text-white">My Orders</RouterLink>
-                    <RouterLink to="/admin/orders" class="transition hover:text-white">
-                        Admin
-                    </RouterLink>
+                    <RouterLink to="/admin/orders" class="transition hover:text-white">Admin</RouterLink>
+                    <RouterLink to="/admin/products" class="transition hover:text-white">Admin Products</RouterLink>
                 </div>
             </nav>
 

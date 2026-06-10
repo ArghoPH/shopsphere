@@ -5,6 +5,7 @@ import CartView from "../views/CartView.vue";
 import CheckoutView from "../views/CheckoutView.vue";
 import OrdersView from "../views/OrdersView.vue";
 import AdminOrdersView from "../views/AdminOrdersView.vue";
+import AdminProductsView from "../views/AdminProductsView.vue";
 
 const routes = [
     {
@@ -38,6 +39,11 @@ const routes = [
         path: "/admin/orders",
         name: "admin-orders",
         component: AdminOrdersView,
+    },
+    {
+        path: "/admin/products",
+        name: "admin-products",
+        component: AdminProductsView,
     },
 
 ];

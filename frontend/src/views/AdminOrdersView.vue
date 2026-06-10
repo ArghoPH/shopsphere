@@ -90,6 +90,11 @@ onMounted(fetchOrders);
                         class="rounded-xl bg-white/10 px-4 py-2 text-sm font-bold text-white transition hover:bg-white/20">
                         Shop
                     </RouterLink>
+
+                    <RouterLink to="/admin/products"
+                        class="rounded-xl bg-white/10 px-4 py-2 text-sm font-bold text-white transition hover:bg-white/20">
+                        Products
+                    </RouterLink>
                 </div>
             </nav>
         </header>
