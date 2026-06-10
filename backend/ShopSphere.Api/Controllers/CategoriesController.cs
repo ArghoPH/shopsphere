@@ -26,6 +26,7 @@ public class CategoriesController : ControllerBase
                 c.Id,
                 c.Name,
                 c.Slug,
+                c.ImageUrl,
                 c.CreatedAt
             })
             .ToListAsync();

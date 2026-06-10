@@ -3,6 +3,7 @@ import { RouterLink } from "vue-router";
 import AppNavbar from "../components/AppNavbar.vue";
 import { ref, onMounted, onUnmounted } from 'vue';
 import { isAuthenticated } from "../stores/auth";
+import api from "../services/api";
 
 // --- IMAGE SLIDER / ADVERTISEMENT LOGIC ---
 const currentSlide = ref(0);
@@ -46,21 +47,30 @@ const prevSlide = () => {
 onMounted(() => {
     // Auto-slide every 5 seconds
     sliderInterval = setInterval(nextSlide, 5000);
+    fetchCategories();
 });
 
 onUnmounted(() => {
     clearInterval(sliderInterval);
+
 });
 
-// --- CATEGORIES WITH FONTAWESOME ---
-const categories = ref([
-    { name: 'Groceries & Food', icon: 'fas fa-utensils', color: 'bg-emerald-100 text-emerald-600', link: '/category/food' },
-    { name: 'Electronics', icon: 'fas fa-laptop', color: 'bg-blue-100 text-blue-600', link: '/category/electronics' },
-    { name: 'Fashion & Wear', icon: 'fas fa-shirt', color: 'bg-pink-100 text-pink-600', link: '/category/fashion' },
-    { name: 'Home & Decor', icon: 'fas fa-couch', color: 'bg-amber-100 text-amber-600', link: '/category/home' },
-    { name: 'Beauty & Health', icon: 'fas fa-sparkles', color: 'bg-rose-100 text-rose-600', link: '/category/beauty' },
-    { name: 'Sports & Toys', icon: 'fas fa-gamepad', color: 'bg-indigo-100 text-indigo-600', link: '/category/sports' },
-]);
+// --- CATEGORIES LOGIC ---
+const categories = ref([]);
+const categoryLoading = ref(true);
+
+const fetchCategories = async () => {
+    categoryLoading.value = true;
+
+    try {
+        const response = await api.get("/categories");
+        categories.value = response.data;
+    } catch (err) {
+        console.error("Failed to load categories", err);
+    } finally {
+        categoryLoading.value = false;
+    }
+};
 
 // --- TRENDING PRODUCTS ---
 const trendingProducts = ref([
@@ -134,20 +144,54 @@ const trendingProducts = ref([
             </section>
 
             <section class="mx-auto max-w-7xl px-4 py-8 md:px-8">
-                <div class="flex items-center justify-between mb-6">
-                    <h2 class="text-xl font-bold text-slate-800 md:text-2xl">Shop by Category</h2>
-                    <RouterLink to="/categories" class="text-sm font-semibold text-blue-600 hover:underline">View All
-                        &rarr;</RouterLink>
+                <div class="mb-6 flex items-center justify-between">
+                    <div>
+                        <p class="text-xs font-black uppercase tracking-[0.25em] text-blue-600">
+                            Explore Collections
+                        </p>
+                        <h2 class="mt-2 text-2xl font-black text-slate-900 md:text-3xl">
+                            Shop by Category
+                        </h2>
+                    </div>
+
+                    <RouterLink to="/products"
+                        class="rounded-full bg-slate-950 px-5 py-3 text-xs font-bold text-white transition hover:bg-blue-600">
+                        View All
+                        <i class="fa-solid fa-arrow-right ml-2"></i>
+                    </RouterLink>
                 </div>
 
-                <div class="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-6">
-                    <RouterLink v-for="cat in categories" :key="cat.name" :to="cat.link"
-                        class="group flex flex-col items-center justify-center rounded-2xl bg-white p-5 shadow-sm border border-slate-100 transition-all hover:shadow-md hover:-translate-y-1">
+                <div v-if="categoryLoading"
+                    class="rounded-3xl bg-white p-10 text-center text-sm font-bold text-slate-500 shadow-sm">
+                    Loading categories...
+                </div>
+
+                <div v-else class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-5">
+                    <RouterLink v-for="category in categories" :key="category.id"
+                        :to="`/products?category=${category.slug}`"
+                        class="group relative h-48 overflow-hidden rounded-3xl bg-slate-900 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl">
+                        <img :src="category.imageUrl || 'https://images.unsplash.com/photo-1441986300917-64674bd600d8?auto=format&fit=crop&w=900&q=80'"
+                            :alt="category.name"
+                            class="absolute inset-0 h-full w-full object-cover transition duration-500 group-hover:scale-110" />
+
                         <div
-                            :class="['flex h-14 w-14 items-center justify-center rounded-full text-xl transition-transform group-hover:scale-110', cat.color]">
-                            <i :class="cat.icon"></i>
+                            class="absolute inset-0 bg-gradient-to-t from-slate-950/85 via-slate-950/30 to-transparent">
                         </div>
-                        <span class="mt-3 text-center text-sm font-semibold text-slate-700">{{ cat.name }}</span>
+
+                        <div class="absolute inset-x-0 bottom-0 p-5">
+                            <div
+                                class="mb-3 inline-flex h-10 w-10 items-center justify-center rounded-full bg-white/15 text-white backdrop-blur-md">
+                                <i class="fa-solid fa-layer-group"></i>
+                            </div>
+
+                            <h3 class="text-xl font-black text-white">
+                                {{ category.name }}
+                            </h3>
+
+                            <p class="mt-1 text-xs font-bold uppercase tracking-wider text-slate-300">
+                                Explore Products
+                            </p>
+                        </div>
                     </RouterLink>
                 </div>
             </section>

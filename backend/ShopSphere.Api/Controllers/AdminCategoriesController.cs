@@ -31,6 +31,7 @@ public class AdminCategoriesController : ControllerBase
                 c.Name,
                 c.Slug,
                 c.CreatedAt,
+                c.ImageUrl,
                 ProductCount = c.Products.Count()
             })
             .ToListAsync();
@@ -66,6 +67,7 @@ public class AdminCategoriesController : ControllerBase
             Id = Guid.NewGuid(),
             Name = request.Name.Trim(),
             Slug = slug,
+            ImageUrl = request.ImageUrl,
             CreatedAt = DateTimeOffset.UtcNow
         };
 
@@ -112,7 +114,7 @@ public class AdminCategoriesController : ControllerBase
 
         category.Name = request.Name.Trim();
         category.Slug = slug;
-
+        category.ImageUrl = request.ImageUrl;
         await _context.SaveChangesAsync();
 
         return Ok(new { message = "Category updated successfully" });
