@@ -57,7 +57,7 @@ onMounted(() => {
     <div class="min-h-screen bg-slate-100 text-slate-950">
         <AppNavbar />
 
-        <main class="mx-auto -mt-10 max-w-7xl px-6 pb-16 md:px-16">
+        <main class="mx-auto mt-8 max-w-7xl px-6 pb-16 md:px-16">
             <section class="rounded-3xl bg-white p-6 shadow-xl shadow-slate-200 md:p-8">
                 <div class="flex flex-col gap-2 md:flex-row md:items-end md:justify-between">
                     <div>

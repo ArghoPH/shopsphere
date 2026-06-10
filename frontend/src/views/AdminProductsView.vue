@@ -2,6 +2,7 @@
 import { onMounted, reactive, ref } from "vue";
 import { RouterLink } from "vue-router";
 import api from "../services/api";
+import AppNavbar from "../components/AppNavbar.vue";
 
 const products = ref([]);
 const categories = ref([]);
@@ -145,27 +146,9 @@ onMounted(loadPage);
 
 <template>
     <div class="min-h-screen bg-slate-100 text-slate-950">
-        <header class="bg-slate-950 px-6 py-6 text-white md:px-16">
-            <nav class="mx-auto flex max-w-7xl items-center justify-between">
-                <RouterLink to="/" class="text-2xl font-bold tracking-tight">
-                    ShopSphere Admin
-                </RouterLink>
+        <AppNavbar />
 
-                <div class="flex items-center gap-3">
-                    <RouterLink to="/admin/orders"
-                        class="rounded-xl bg-white/10 px-4 py-2 text-sm font-bold text-white transition hover:bg-white/20">
-                        Orders
-                    </RouterLink>
-
-                    <RouterLink to="/"
-                        class="rounded-xl bg-white/10 px-4 py-2 text-sm font-bold text-white transition hover:bg-white/20">
-                        Shop
-                    </RouterLink>
-                </div>
-            </nav>
-        </header>
-
-        <main class="mx-auto max-w-7xl px-6 py-12 md:px-16">
+        <main class="mx-auto  max-w-7xl px-6 py-12 md:px-16">
             <div class="mb-8">
                 <h1 class="text-4xl font-black">Admin Product Management</h1>
                 <p class="mt-2 text-slate-500">
@@ -295,8 +278,8 @@ onMounted(loadPage);
 
                                         <span class="inline-flex h-8 items-center rounded-lg px-3 text-xs font-bold"
                                             :class="product.isActive
-                                                    ? 'bg-green-50 text-green-700'
-                                                    : 'bg-red-50 text-red-700'
+                                                ? 'bg-green-50 text-green-700'
+                                                : 'bg-red-50 text-red-700'
                                                 ">
                                             {{ product.isActive ? "Active" : "Inactive" }}
                                         </span>

@@ -3,6 +3,7 @@ import { onMounted, ref } from "vue";
 import { RouterLink, useRouter } from "vue-router";
 import api from "../services/api";
 import { auth, isAuthenticated } from "../stores/auth";
+import AppNavbar from "../components/AppNavbar.vue";
 
 const router = useRouter();
 
@@ -80,18 +81,7 @@ onMounted(fetchCart);
 
 <template>
     <div class="min-h-screen bg-slate-100 text-slate-950">
-        <header class="bg-slate-950 px-6 py-6 text-white md:px-16">
-            <nav class="mx-auto flex max-w-7xl items-center justify-between">
-                <RouterLink to="/" class="text-2xl font-bold tracking-tight">
-                    ShopSphere
-                </RouterLink>
-
-                <RouterLink to="/cart"
-                    class="rounded-xl bg-white/10 px-4 py-2 text-sm font-bold text-white transition hover:bg-white/20">
-                    Back to Cart
-                </RouterLink>
-            </nav>
-        </header>
+        <AppNavbar />
 
         <main class="mx-auto max-w-7xl px-6 py-12 md:px-16">
             <h1 class="mb-8 text-4xl font-black">Checkout</h1>

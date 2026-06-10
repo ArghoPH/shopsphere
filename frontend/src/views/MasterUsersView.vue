@@ -3,6 +3,7 @@ import { onMounted, reactive, ref } from "vue";
 import { RouterLink, useRouter } from "vue-router";
 import api from "../services/api";
 import { auth, clearAuth } from "../stores/auth";
+import AppNavbar from "../components/AppNavbar.vue";
 
 const router = useRouter();
 
@@ -87,30 +88,7 @@ onMounted(fetchUsers);
 
 <template>
     <div class="min-h-screen bg-slate-100 text-slate-950">
-        <header class="bg-slate-950 px-6 py-6 text-white md:px-16">
-            <nav class="mx-auto flex max-w-7xl items-center justify-between">
-                <RouterLink to="/" class="text-2xl font-bold">
-                    ShopSphere Master
-                </RouterLink>
-
-                <div class="flex items-center gap-3">
-                    <RouterLink to="/admin/orders"
-                        class="rounded-xl bg-white/10 px-4 py-2 text-sm font-bold transition hover:bg-white/20">
-                        Orders
-                    </RouterLink>
-
-                    <RouterLink to="/admin/products"
-                        class="rounded-xl bg-white/10 px-4 py-2 text-sm font-bold transition hover:bg-white/20">
-                        Products
-                    </RouterLink>
-
-                    <button @click="logout"
-                        class="rounded-xl bg-red-500 px-4 py-2 text-sm font-bold text-white transition hover:bg-red-600">
-                        Logout
-                    </button>
-                </div>
-            </nav>
-        </header>
+        <AppNavbar />
 
         <main class="mx-auto max-w-7xl px-6 py-12 md:px-16">
             <div class="mb-8">
@@ -189,8 +167,8 @@ onMounted(fetchUsers);
 
                                         <span class="inline-flex h-8 items-center rounded-lg px-3 text-xs font-bold"
                                             :class="user.isActive
-                                                    ? 'bg-green-50 text-green-700'
-                                                    : 'bg-red-50 text-red-700'
+                                                ? 'bg-green-50 text-green-700'
+                                                : 'bg-red-50 text-red-700'
                                                 ">
                                             {{ user.isActive ? "Active" : "Inactive" }}
                                         </span>
@@ -207,8 +185,8 @@ onMounted(fetchUsers);
 
                                 <button @click="toggleStatus(user)"
                                     class="rounded-2xl px-5 py-3 text-sm font-bold transition" :class="user.isActive
-                                            ? 'bg-red-50 text-red-600 hover:bg-red-100'
-                                            : 'bg-green-50 text-green-700 hover:bg-green-100'
+                                        ? 'bg-red-50 text-red-600 hover:bg-red-100'
+                                        : 'bg-green-50 text-green-700 hover:bg-green-100'
                                         ">
                                     {{ user.isActive ? "Deactivate" : "Activate" }}
                                 </button>
