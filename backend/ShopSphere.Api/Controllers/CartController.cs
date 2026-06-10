@@ -1,13 +1,16 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ShopSphere.Api.Data;
 using ShopSphere.Api.DTOs;
 using ShopSphere.Api.Models;
+using System.Security.Claims;
 
 namespace ShopSphere.Api.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[Authorize]
 public class CartController : ControllerBase
 {
     private readonly AppDbContext _context;
@@ -17,59 +20,83 @@ public class CartController : ControllerBase
         _context = context;
     }
 
+    private Guid? GetCurrentUserId()
+    {
+        var userIdText = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+        if (!Guid.TryParse(userIdText, out var userId))
+        {
+            return null;
+        }
+
+        return userId;
+    }
+
     [HttpGet("{userId:guid}")]
     public async Task<IActionResult> GetCart(Guid userId)
     {
+        var currentUserId = GetCurrentUserId();
+
+        if (currentUserId == null)
+        {
+            return Unauthorized();
+        }
+
+        if (userId != currentUserId.Value)
+        {
+            return Forbid();
+        }
+
         var cart = await _context.Carts
             .AsNoTracking()
-            .Where(c => c.UserId == userId)
-            .Select(c => new
-            {
-                c.Id,
-                c.UserId,
-                Items = c.CartItems.Select(ci => new
-                {
-                    ci.Id,
-                    ci.ProductId,
-                    ProductName = ci.Product != null ? ci.Product.Name : "Unknown Product",
-                    ImageUrl = ci.Product != null ? ci.Product.ImageUrl : null,
-                    ci.Quantity,
-                    ci.Price,
-                    Subtotal = ci.Price * ci.Quantity
-                }).ToList()
-            })
-            .FirstOrDefaultAsync();
+            .Include(c => c.CartItems)
+                .ThenInclude(ci => ci.Product)
+            .FirstOrDefaultAsync(c => c.UserId == userId);
 
         if (cart == null)
         {
             return Ok(new
             {
+                cartId = (Guid?)null,
                 userId,
-                items = Array.Empty<object>(),
-                totalAmount = 0
+                items = new List<object>(),
+                total = 0
             });
         }
 
+        var items = cart.CartItems.Select(ci => new
+        {
+            ci.Id,
+            ci.ProductId,
+            ProductName = ci.Product != null ? ci.Product.Name : "Unknown Product",
+            ImageUrl = ci.Product != null ? ci.Product.ImageUrl : null,
+            ci.Quantity,
+            ci.Price,
+            Subtotal = ci.Price * ci.Quantity
+        }).ToList();
+
         return Ok(new
         {
-            cart.Id,
+            cartId = cart.Id,
             cart.UserId,
-            cart.Items,
-            TotalAmount = cart.Items.Sum(i => i.Subtotal)
+            items,
+            total = items.Sum(i => i.Subtotal)
         });
     }
 
     [HttpPost("add")]
     public async Task<IActionResult> AddToCart(AddToCartRequest request)
     {
-        if (request.UserId == Guid.Empty)
+        var currentUserId = GetCurrentUserId();
+
+        if (currentUserId == null)
         {
-            return BadRequest(new { message = "UserId is required" });
+            return Unauthorized();
         }
 
-        if (request.ProductId == Guid.Empty)
+        if (request.UserId != Guid.Empty && request.UserId != currentUserId.Value)
         {
-            return BadRequest(new { message = "ProductId is required" });
+            return Forbid();
         }
 
         if (request.Quantity <= 0)
@@ -91,14 +118,14 @@ public class CartController : ControllerBase
         }
 
         var cart = await _context.Carts
-            .FirstOrDefaultAsync(c => c.UserId == request.UserId);
+            .FirstOrDefaultAsync(c => c.UserId == currentUserId.Value);
 
         if (cart == null)
         {
             cart = new Cart
             {
                 Id = Guid.NewGuid(),
-                UserId = request.UserId,
+                UserId = currentUserId.Value,
                 CreatedAt = DateTimeOffset.UtcNow
             };
 
@@ -109,8 +136,7 @@ public class CartController : ControllerBase
         var existingItem = await _context.CartItems
             .FirstOrDefaultAsync(ci =>
                 ci.CartId == cart.Id &&
-                ci.ProductId == request.ProductId
-            );
+                ci.ProductId == request.ProductId);
 
         if (existingItem != null)
         {
@@ -122,7 +148,6 @@ public class CartController : ControllerBase
             }
 
             existingItem.Quantity = newQuantity;
-            existingItem.Price = product.Price;
         }
         else
         {
@@ -141,24 +166,37 @@ public class CartController : ControllerBase
 
         await _context.SaveChangesAsync();
 
-        return Ok(new { message = "Product added to cart" });
+        return Ok(new { message = "Product added to cart successfully" });
     }
 
     [HttpPut("items/{cartItemId:guid}")]
     public async Task<IActionResult> UpdateCartItem(Guid cartItemId, UpdateCartItemRequest request)
     {
+        var currentUserId = GetCurrentUserId();
+
+        if (currentUserId == null)
+        {
+            return Unauthorized();
+        }
+
         if (request.Quantity <= 0)
         {
             return BadRequest(new { message = "Quantity must be greater than zero" });
         }
 
         var cartItem = await _context.CartItems
+            .Include(ci => ci.Cart)
             .Include(ci => ci.Product)
             .FirstOrDefaultAsync(ci => ci.Id == cartItemId);
 
         if (cartItem == null)
         {
             return NotFound(new { message = "Cart item not found" });
+        }
+
+        if (cartItem.Cart == null || cartItem.Cart.UserId != currentUserId.Value)
+        {
+            return Forbid();
         }
 
         if (cartItem.Product != null && cartItem.Product.Stock < request.Quantity)
@@ -170,13 +208,21 @@ public class CartController : ControllerBase
 
         await _context.SaveChangesAsync();
 
-        return Ok(new { message = "Cart item updated" });
+        return Ok(new { message = "Cart item updated successfully" });
     }
 
     [HttpDelete("items/{cartItemId:guid}")]
     public async Task<IActionResult> RemoveCartItem(Guid cartItemId)
     {
+        var currentUserId = GetCurrentUserId();
+
+        if (currentUserId == null)
+        {
+            return Unauthorized();
+        }
+
         var cartItem = await _context.CartItems
+            .Include(ci => ci.Cart)
             .FirstOrDefaultAsync(ci => ci.Id == cartItemId);
 
         if (cartItem == null)
@@ -184,10 +230,15 @@ public class CartController : ControllerBase
             return NotFound(new { message = "Cart item not found" });
         }
 
+        if (cartItem.Cart == null || cartItem.Cart.UserId != currentUserId.Value)
+        {
+            return Forbid();
+        }
+
         _context.CartItems.Remove(cartItem);
 
         await _context.SaveChangesAsync();
 
-        return Ok(new { message = "Cart item removed" });
+        return Ok(new { message = "Cart item removed successfully" });
     }
 }
