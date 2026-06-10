@@ -2,7 +2,7 @@
 import { onMounted, ref } from "vue";
 import { RouterLink } from "vue-router";
 import api from "../services/api";
-import { GUEST_USER_ID } from "../constants/user";
+import { auth, isAuthenticated } from "../stores/auth";
 
 const orders = ref([]);
 const loading = ref(true);
@@ -10,7 +10,7 @@ const error = ref("");
 
 const fetchOrders = async () => {
     try {
-        const response = await api.get(`/orders/user/${GUEST_USER_ID}`);
+        const response = await api.get(`/orders/user/${auth.userId}`);
         orders.value = response.data;
     } catch (err) {
         error.value = "Failed to load orders.";

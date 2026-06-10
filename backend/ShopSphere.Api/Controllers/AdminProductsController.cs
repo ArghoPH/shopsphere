@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ShopSphere.Api.Data;
@@ -8,6 +9,7 @@ namespace ShopSphere.Api.Controllers;
 
 [ApiController]
 [Route("api/admin/products")]
+[Authorize(Roles = "Admin,MasterAdmin")]
 public class AdminProductsController : ControllerBase
 {
     private readonly AppDbContext _context;
@@ -65,8 +67,7 @@ public class AdminProductsController : ControllerBase
             return BadRequest(new { message = "Stock cannot be negative" });
         }
 
-        var slugExists = await _context.Products
-            .AnyAsync(p => p.Slug == request.Slug);
+        var slugExists = await _context.Products.AnyAsync(p => p.Slug == request.Slug);
 
         if (slugExists)
         {
@@ -111,8 +112,7 @@ public class AdminProductsController : ControllerBase
     [HttpPut("{id:guid}")]
     public async Task<IActionResult> UpdateProduct(Guid id, UpdateProductRequest request)
     {
-        var product = await _context.Products
-            .FirstOrDefaultAsync(p => p.Id == id);
+        var product = await _context.Products.FirstOrDefaultAsync(p => p.Id == id);
 
         if (product == null)
         {
@@ -147,17 +147,6 @@ public class AdminProductsController : ControllerBase
             return BadRequest(new { message = "Slug already exists" });
         }
 
-        if (request.CategoryId.HasValue)
-        {
-            var categoryExists = await _context.Categories
-                .AnyAsync(c => c.Id == request.CategoryId.Value);
-
-            if (!categoryExists)
-            {
-                return BadRequest(new { message = "Category not found" });
-            }
-        }
-
         product.CategoryId = request.CategoryId;
         product.Name = request.Name;
         product.Slug = request.Slug;
@@ -175,8 +164,7 @@ public class AdminProductsController : ControllerBase
     [HttpDelete("{id:guid}")]
     public async Task<IActionResult> DeactivateProduct(Guid id)
     {
-        var product = await _context.Products
-            .FirstOrDefaultAsync(p => p.Id == id);
+        var product = await _context.Products.FirstOrDefaultAsync(p => p.Id == id);
 
         if (product == null)
         {

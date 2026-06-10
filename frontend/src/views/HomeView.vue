@@ -2,7 +2,17 @@
 import { onMounted, ref } from "vue";
 import { RouterLink } from "vue-router";
 import api from "../services/api";
-import { GUEST_USER_ID } from "../constants/user";
+import { auth, clearAuth, isAuthenticated } from "../stores/auth";
+import { useRouter } from "vue-router";
+
+
+const logout = () => {
+    clearAuth();
+    router.push("/login");
+};
+
+
+const router = useRouter();
 
 const products = ref([]);
 const loading = ref(true);
@@ -24,7 +34,7 @@ const fetchProducts = async () => {
 const addToCart = async (productId) => {
     try {
         await api.post("/cart/add", {
-            userId: GUEST_USER_ID,
+            userId: auth.userId,
             productId: productId,
             quantity: 1,
         });
@@ -35,6 +45,7 @@ const addToCart = async (productId) => {
         console.error(err);
     }
 };
+
 
 onMounted(() => {
     fetchProducts();
@@ -56,6 +67,21 @@ onMounted(() => {
                     <RouterLink to="/orders" class="transition hover:text-white">My Orders</RouterLink>
                     <RouterLink to="/admin/orders" class="transition hover:text-white">Admin</RouterLink>
                     <RouterLink to="/admin/products" class="transition hover:text-white">Admin Products</RouterLink>
+                    <RouterLink v-if="!isAuthenticated()" to="/login" class="transition hover:text-white">
+                        Login
+                    </RouterLink>
+
+                    <RouterLink v-if="!isAuthenticated()" to="/register" class="transition hover:text-white">
+                        Register
+                    </RouterLink>
+
+                    <span v-if="isAuthenticated()" class="text-sm text-slate-300">
+                        {{ auth.fullName }}
+                    </span>
+
+                    <button v-if="isAuthenticated()" @click="logout" class="transition hover:text-white">
+                        Logout
+                    </button>
                 </div>
             </nav>
 

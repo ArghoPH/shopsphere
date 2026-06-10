@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ShopSphere.Api.Data;
@@ -7,6 +8,7 @@ namespace ShopSphere.Api.Controllers;
 
 [ApiController]
 [Route("api/admin/orders")]
+[Authorize(Roles = "Admin,MasterAdmin")]
 public class AdminOrdersController : ControllerBase
 {
     private readonly AppDbContext _context;

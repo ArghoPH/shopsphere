@@ -2,6 +2,15 @@
 import { onMounted, reactive, ref } from "vue";
 import { RouterLink } from "vue-router";
 import api from "../services/api";
+import { useRouter } from "vue-router";
+import { clearAuth } from "../stores/auth";
+
+const router = useRouter();
+
+const logout = () => {
+    clearAuth();
+    router.push("/login");
+};
 
 const orders = ref([]);
 const loading = ref(true);
@@ -95,6 +104,10 @@ onMounted(fetchOrders);
                         class="rounded-xl bg-white/10 px-4 py-2 text-sm font-bold text-white transition hover:bg-white/20">
                         Products
                     </RouterLink>
+                    <button @click="logout"
+                        class="rounded-xl bg-red-500 px-4 py-2 text-sm font-bold text-white transition hover:bg-red-600">
+                        Logout
+                    </button>
                 </div>
             </nav>
         </header>

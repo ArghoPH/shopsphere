@@ -2,7 +2,10 @@
 import { onMounted, ref } from "vue";
 import { RouterLink, useRoute } from "vue-router";
 import api from "../services/api";
-import { GUEST_USER_ID } from "../constants/user";
+import { auth, isAuthenticated } from "../stores/auth";
+import { useRouter } from "vue-router";
+
+const router = useRouter();
 
 const route = useRoute();
 
@@ -13,11 +16,16 @@ const error = ref("");
 const cartMessage = ref("");
 
 const addToCart = async () => {
+    if (!isAuthenticated()) {
+        router.push("/login");
+        return;
+    }
+
     if (!product.value) return;
 
     try {
         await api.post("/cart/add", {
-            userId: GUEST_USER_ID,
+            userId: auth.userId,
             productId: product.value.id,
             quantity: 1,
         });
