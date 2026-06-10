@@ -6,6 +6,7 @@ import AppNavbar from "../components/AppNavbar.vue";
 
 const products = ref([]);
 const categories = ref([]);
+const uploadingImage = ref(false);
 
 const loading = ref(true);
 const saving = ref(false);
@@ -75,6 +76,38 @@ const loadPage = async () => {
     loading.value = false;
 };
 
+const uploadImage = async (event) => {
+    const file = event.target.files?.[0];
+
+    if (!file) return;
+
+    uploadingImage.value = true;
+    error.value = "";
+    success.value = "";
+
+    try {
+        const formData = new FormData();
+        formData.append("file", file);
+
+        const response = await api.post("/admin/uploads/product-image", formData, {
+            headers: {
+                "Content-Type": "multipart/form-data",
+            },
+        });
+
+        form.imageUrl = response.data.imageUrl;
+        success.value = "Image uploaded successfully.";
+    } catch (err) {
+        error.value =
+            err.response?.data?.message ||
+            err.response?.data?.details ||
+            "Failed to upload image.";
+        console.error(err);
+    } finally {
+        uploadingImage.value = false;
+    }
+};
+
 const saveProduct = async () => {
     saving.value = true;
     error.value = "";
@@ -88,7 +121,7 @@ const saveProduct = async () => {
             description: form.description,
             price: Number(form.price),
             stock: Number(form.stock),
-            imageUrl: form.imageUrl,
+            imageUrl: form.imageUrl || null,
             isActive: form.isActive,
         };
 
@@ -235,11 +268,23 @@ onMounted(loadPage);
 
                         <div>
                             <label class="mb-2 block text-sm font-bold text-slate-700">
-                                Image URL
+                                Product Image
                             </label>
+
+                            <input type="file" accept="image/jpeg,image/png,image/webp" @change="uploadImage"
+                                class="w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm outline-none focus:border-slate-950" />
+
+                            <p v-if="uploadingImage"
+                                class="mt-2 rounded-xl bg-blue-50 px-4 py-3 text-sm font-bold text-blue-700">
+                                Uploading image...
+                            </p>
+
                             <input v-model="form.imageUrl" type="text"
-                                class="w-full rounded-2xl border border-slate-300 px-4 py-3 outline-none focus:border-slate-950"
-                                placeholder="https://..." />
+                                class="mt-3 w-full rounded-2xl border border-slate-300 px-4 py-3 text-sm outline-none focus:border-slate-950"
+                                placeholder="Image URL will appear here" />
+
+                            <img v-if="form.imageUrl" :src="form.imageUrl" alt="Product preview"
+                                class="mt-4 h-40 w-full rounded-2xl object-cover ring-1 ring-slate-200" />
                         </div>
 
                         <label class="flex items-center gap-3 rounded-2xl bg-slate-50 p-4">
