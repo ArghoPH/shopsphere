@@ -16,23 +16,37 @@ public class ProductsController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetProducts()
+    [HttpGet]
+    public async Task<IActionResult> GetProducts([FromQuery] string? categorySlug)
     {
-        var products = await _context.Products
+        var query = _context.Products
             .AsNoTracking()
             .Include(p => p.Category)
-            .Where(p => p.IsActive)
+            .Where(p => p.IsActive);
+
+        if (!string.IsNullOrWhiteSpace(categorySlug))
+        {
+            query = query.Where(p =>
+                p.Category != null &&
+                p.Category.Slug == categorySlug);
+        }
+
+        var products = await query
             .OrderByDescending(p => p.CreatedAt)
             .Select(p => new
             {
                 p.Id,
+                p.CategoryId,
+                CategoryName = p.Category != null ? p.Category.Name : null,
+                CategorySlug = p.Category != null ? p.Category.Slug : null,
                 p.Name,
                 p.Slug,
                 p.Description,
                 p.Price,
                 p.Stock,
                 p.ImageUrl,
-                CategoryName = p.Category != null ? p.Category.Name : null
+                p.IsActive,
+                p.CreatedAt
             })
             .ToListAsync();
 
