@@ -5,6 +5,8 @@ import api from "../services/api";
 import AppNavbar from "../components/AppNavbar.vue";
 import { auth, isAuthenticated } from "../stores/auth";
 
+const addingProducts = ref({});
+
 const router = useRouter();
 const route = useRoute();
 
@@ -40,6 +42,11 @@ const addToCart = async (productId) => {
         router.push("/login");
         return;
     }
+
+    addingProducts.value = {
+        ...addingProducts.value,
+        [productId]: true,
+    };
 
     try {
         await api.post("/cart/add", {
@@ -77,6 +84,11 @@ const addToCart = async (productId) => {
         }, 2500);
 
         console.error(err);
+    } finally {
+        addingProducts.value = {
+            ...addingProducts.value,
+            [productId]: false,
+        };
     }
 };
 
@@ -188,19 +200,23 @@ onMounted(() => {
                                 View Details
                             </RouterLink>
 
-                            <button type="button" @click="addToCart(product.id)" :disabled="product.stock <= 0"
+                            <button type="button" @click="addToCart(product.id)"
+                                :disabled="product.stock <= 0 || addingProducts[product.id]"
                                 class="flex-1 rounded-2xl bg-slate-950 px-4 py-3 text-sm font-bold text-white transition hover:bg-blue-600 disabled:cursor-not-allowed disabled:opacity-50">
-                                Add to Cart
-                            </button>
+                                {{
+                                    addingProducts[product.id]
+                                        ? "Adding..."
+                                        : product.stock <= 0 ? "Out of Stock" : "Add to Cart" }} </button>
                         </div>
+
                         <Transition enter-active-class="transition duration-200 ease-out"
                             enter-from-class="opacity-0 translate-y-1" enter-to-class="opacity-100 translate-y-0"
                             leave-active-class="transition duration-150 ease-in"
                             leave-from-class="opacity-100 translate-y-0" leave-to-class="opacity-0 translate-y-1">
                             <p v-if="productMessages[product.id]"
                                 class="mt-3 rounded-xl px-4 py-3 text-center text-xs font-bold" :class="productMessages[product.id].type === 'success'
-                                        ? 'bg-green-50 text-green-700'
-                                        : 'bg-red-50 text-red-600'
+                                    ? 'bg-green-50 text-green-700'
+                                    : 'bg-red-50 text-red-600'
                                     ">
                                 {{ productMessages[product.id].text }}
                             </p>
