@@ -158,7 +158,7 @@ const trendingProducts = ref([
                     <h3 class="text-xl font-bold md:text-2xl"><i class="fas fa-gift mr-2"></i> Get 20% Off on Your First
                         Order!</h3>
                     <p class="mt-1 text-sm text-rose-100">Use coupon code <span
-                            class="rounded bg-white px-2 py-0.5 font-mono text-xs font-bold text-rose-600">WELCOME20</span>
+                            class="rounded bg-white px-2 py-0.5 text-xs font-bold text-rose-600">WELCOME20</span>
                         at checkout.</p>
                 </div>
             </section>
