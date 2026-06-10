@@ -4,26 +4,10 @@ import { RouterLink } from "vue-router";
 import api from "../services/api";
 import { GUEST_USER_ID } from "../constants/user";
 
-const cartMessage = ref("");
-
-const addToCart = async (productId) => {
-    try {
-        await api.post("/cart/add", {
-            userId: GUEST_USER_ID,
-            productId,
-            quantity: 1,
-        });
-
-        cartMessage.value = "Product added to cart!";
-    } catch (err) {
-        cartMessage.value = "Failed to add product to cart.";
-        console.error(err);
-    }
-};
-
 const products = ref([]);
 const loading = ref(true);
 const error = ref("");
+const cartMessage = ref("");
 
 const fetchProducts = async () => {
     try {
@@ -34,6 +18,21 @@ const fetchProducts = async () => {
         console.error(err);
     } finally {
         loading.value = false;
+    }
+};
+
+const addToCart = async (productId) => {
+    try {
+        await api.post("/cart/add", {
+            userId: GUEST_USER_ID,
+            productId: productId,
+            quantity: 1,
+        });
+
+        cartMessage.value = "Product added to cart!";
+    } catch (err) {
+        cartMessage.value = "Failed to add product to cart.";
+        console.error(err);
     }
 };
 
@@ -98,6 +97,10 @@ onMounted(() => {
                 <div v-else-if="error"
                     class="rounded-3xl bg-white p-10 text-center font-semibold text-red-600 shadow-sm">
                     {{ error }}
+                </div>
+
+                <div v-if="cartMessage" class="mb-6 rounded-2xl bg-green-50 p-4 text-sm font-bold text-green-700">
+                    {{ cartMessage }}
                 </div>
 
                 <div v-else class="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">

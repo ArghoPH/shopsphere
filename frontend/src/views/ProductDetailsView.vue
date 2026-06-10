@@ -2,12 +2,32 @@
 import { onMounted, ref } from "vue";
 import { RouterLink, useRoute } from "vue-router";
 import api from "../services/api";
+import { GUEST_USER_ID } from "../constants/user";
 
 const route = useRoute();
 
 const product = ref(null);
 const loading = ref(true);
 const error = ref("");
+
+const cartMessage = ref("");
+
+const addToCart = async () => {
+    if (!product.value) return;
+
+    try {
+        await api.post("/cart/add", {
+            userId: GUEST_USER_ID,
+            productId: product.value.id,
+            quantity: 1,
+        });
+
+        cartMessage.value = "Product added to cart!";
+    } catch (err) {
+        cartMessage.value = "Failed to add product to cart.";
+        console.error(err);
+    }
+};
 
 const fetchProduct = async () => {
     try {
@@ -80,8 +100,9 @@ onMounted(() => {
                     </div>
 
                     <div class="mt-8 grid gap-3 sm:grid-cols-2">
-                        <button @click="addToCart(product.id)"
-                            class="mt-3 w-full rounded-2xl bg-blue-600 px-5 py-4 text-sm font-bold text-white transition hover:bg-blue-700">
+
+                        <button @click="addToCart"
+                            class="rounded-2xl bg-slate-950 px-6 py-4 text-sm font-bold text-white transition hover:bg-blue-600">
                             Add to Cart
                         </button>
 
@@ -89,6 +110,11 @@ onMounted(() => {
                             class="rounded-2xl border border-slate-300 bg-white px-6 py-4 text-sm font-bold text-slate-950 transition hover:border-slate-950">
                             Buy Now
                         </button>
+                        <div v-if="cartMessage"
+                            class="mt-6 rounded-2xl bg-green-50 p-4 text-sm font-bold text-green-700">
+                            {{ cartMessage }}
+                        </div>
+
                     </div>
                 </div>
             </section>
