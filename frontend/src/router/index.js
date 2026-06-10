@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from "vue-router";
 
 import HomeView from "../views/HomeView.vue";
+import ProductsView from "../views/ProductsView.vue";
 import ProductDetailsView from "../views/ProductDetailsView.vue";
 import CartView from "../views/CartView.vue";
 import CheckoutView from "../views/CheckoutView.vue";
@@ -21,6 +22,11 @@ const router = createRouter({
             path: "/",
             name: "home",
             component: HomeView,
+        },
+        {
+            path: "/products",
+            name: "products",
+            component: ProductsView,
         },
         {
             path: "/products/:id",
@@ -88,11 +94,8 @@ const router = createRouter({
                 roles: ["MasterAdmin"],
             },
         },
-        {
-            path: "/products",
-            name: "products",
-            component: HomeView,
-        },
+
+
         {
             path: "/admin/categories",
             name: "admin-categories",
