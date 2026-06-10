@@ -5,6 +5,34 @@ import api from "../services/api";
 import { auth, isAuthenticated } from "../stores/auth";
 import AppNavbar from "../components/AppNavbar.vue";
 
+const formatPaymentMethod = (method) => {
+    if (method === "CashOnDelivery") {
+        return "Cash on Delivery";
+    }
+
+    return method;
+};
+
+const getOrderStatusClass = (status) => {
+    if (status === "Delivered") {
+        return "bg-green-50 text-green-700";
+    }
+
+    if (status === "Cancelled") {
+        return "bg-red-50 text-red-700";
+    }
+
+    if (status === "Shipped") {
+        return "bg-blue-50 text-blue-700";
+    }
+
+    if (status === "Confirmed") {
+        return "bg-purple-50 text-purple-700";
+    }
+
+    return "bg-amber-50 text-amber-700";
+};
+
 const orders = ref([]);
 const loading = ref(true);
 const error = ref("");
@@ -84,17 +112,15 @@ onMounted(fetchOrders);
                                 </p>
                             </div>
 
-                            <div class="flex flex-wrap gap-2">
-                                <span class="rounded-full bg-blue-50 px-4 py-2 text-sm font-bold text-blue-700">
-                                    {{ order.orderStatus }}
+                            <div class="flex flex-wrap items-center gap-2">
+                                <span class="inline-flex h-8 items-center rounded-lg px-3 text-xs font-bold"
+                                    :class="getOrderStatusClass(order.orderStatus)">
+                                    Order: {{ order.orderStatus }}
                                 </span>
 
-                                <span class="rounded-full bg-amber-50 px-4 py-2 text-sm font-bold text-amber-700">
-                                    {{ order.paymentStatus }}
-                                </span>
-
-                                <span class="rounded-full bg-slate-100 px-4 py-2 text-sm font-bold text-slate-700">
-                                    {{ order.paymentMethod }}
+                                <span
+                                    class="inline-flex h-8 items-center rounded-lg bg-slate-100 px-3 text-xs font-bold text-slate-700">
+                                    {{ formatPaymentMethod(order.paymentMethod) }}
                                 </span>
                             </div>
                         </div>
