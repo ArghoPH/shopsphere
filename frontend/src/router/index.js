@@ -87,6 +87,11 @@ const router = createRouter({
                 roles: ["MasterAdmin"],
             },
         },
+        {
+            path: "/products",
+            name: "products",
+            component: HomeView,
+        },
     ],
 });
 

@@ -4,6 +4,7 @@ import { RouterLink } from "vue-router";
 import api from "../services/api";
 import { auth, clearAuth, isAuthenticated } from "../stores/auth";
 import { useRouter } from "vue-router";
+import AppNavbar from "../components/AppNavbar.vue";
 
 
 const logout = () => {
@@ -54,52 +55,7 @@ onMounted(() => {
 
 <template>
     <div class="min-h-screen bg-slate-100 text-slate-950">
-        <header class="bg-slate-950 px-6 py-6 text-white md:px-16">
-            <nav class="mx-auto flex max-w-7xl items-center justify-between">
-                <RouterLink to="/" class="text-2xl font-bold tracking-tight">
-                    ShopSphere
-                </RouterLink>
-
-                <div class="hidden items-center gap-8 text-sm text-slate-300 md:flex">
-                    <RouterLink to="/" class="transition hover:text-white">Home</RouterLink>
-                    <a href="#" class="transition hover:text-white">Products</a>
-                    <RouterLink to="/cart" class="transition hover:text-white">Cart</RouterLink>
-                    <RouterLink to="/orders" class="transition hover:text-white">My Orders</RouterLink>
-                    <RouterLink to="/admin/orders" class="transition hover:text-white">Admin</RouterLink>
-                    <RouterLink to="/admin/products" class="transition hover:text-white">Admin Products</RouterLink>
-                    <RouterLink v-if="!isAuthenticated()" to="/login" class="transition hover:text-white">
-                        Login
-                    </RouterLink>
-
-                    <RouterLink v-if="!isAuthenticated()" to="/register" class="transition hover:text-white">
-                        Register
-                    </RouterLink>
-
-                    <span v-if="isAuthenticated()" class="text-sm text-slate-300">
-                        {{ auth.fullName }}
-                    </span>
-
-                    <button v-if="isAuthenticated()" @click="logout" class="transition hover:text-white">
-                        Logout
-                    </button>
-                </div>
-            </nav>
-
-            <section class="mx-auto max-w-7xl py-20 md:py-28">
-                <p class="mb-4 font-semibold text-blue-300">
-                    ASP.NET Core + Vue + Supabase
-                </p>
-
-                <h1 class="max-w-3xl text-4xl font-black leading-tight md:text-6xl">
-                    Build your modern e-commerce store
-                </h1>
-
-                <p class="mt-6 max-w-2xl text-base leading-8 text-slate-300 md:text-lg">
-                    A fully functional free-tier friendly e-commerce project with product
-                    listing, cart, checkout, Cash on Delivery and Mock Payment.
-                </p>
-            </section>
-        </header>
+        <AppNavbar />
 
         <main class="mx-auto -mt-10 max-w-7xl px-6 pb-16 md:px-16">
             <section class="rounded-3xl bg-white p-6 shadow-xl shadow-slate-200 md:p-8">
