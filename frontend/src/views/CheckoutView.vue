@@ -65,7 +65,7 @@ const placeOrder = async () => {
         showConfirmBox.value = false;
 
         setTimeout(() => {
-            router.push("/");
+            router.push("/orders");
         }, 1500);
     } catch (err) {
         error.value = err.response?.data?.message || "Failed to place order.";

@@ -58,6 +58,10 @@ onMounted(fetchCart);
                     class="rounded-xl bg-white/10 px-4 py-2 text-sm font-bold text-white transition hover:bg-white/20">
                     Continue Shopping
                 </RouterLink>
+                <RouterLink to="/orders"
+                    class="rounded-xl bg-white/10 px-4 py-2 text-sm font-bold text-white transition hover:bg-white/20">
+                    Orders
+                </RouterLink>
             </nav>
         </header>
 

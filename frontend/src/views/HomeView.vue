@@ -53,6 +53,7 @@ onMounted(() => {
                     <RouterLink to="/" class="transition hover:text-white">Home</RouterLink>
                     <a href="#" class="transition hover:text-white">Products</a>
                     <RouterLink to="/cart" class="transition hover:text-white">Cart</RouterLink>
+                    <RouterLink to="/orders" class="transition hover:text-white">My Orders</RouterLink>
                 </div>
             </nav>
 
