@@ -1,10 +1,11 @@
 <script setup>
-import { ref } from "vue";
+import { onBeforeUnmount, onMounted, ref } from "vue";
 import { RouterLink, useRouter } from "vue-router";
 import { auth, clearAuth, isAuthenticated } from "../stores/auth";
 
 const router = useRouter();
 
+const navRef = ref(null);
 const manageOpen = ref(false);
 const accountOpen = ref(false);
 
@@ -19,9 +20,10 @@ const closeMenus = () => {
     accountOpen.value = false;
 };
 
-const goTo = (path) => {
-    closeMenus();
-    router.push(path);
+const handleOutsideClick = (event) => {
+    if (navRef.value && !navRef.value.contains(event.target)) {
+        closeMenus();
+    }
 };
 
 const logout = () => {
@@ -29,11 +31,19 @@ const logout = () => {
     closeMenus();
     router.push("/login");
 };
+
+onMounted(() => {
+    document.addEventListener("click", handleOutsideClick);
+});
+
+onBeforeUnmount(() => {
+    document.removeEventListener("click", handleOutsideClick);
+});
 </script>
 
 <template>
     <header class="sticky top-0 z-50 border-b border-white/10 bg-slate-950 text-white">
-        <nav class="mx-auto flex max-w-7xl items-center justify-between px-6 py-4 md:px-16">
+        <nav ref="navRef" class="mx-auto flex max-w-7xl items-center justify-between px-6 py-4 md:px-16">
             <RouterLink to="/" @click="closeMenus" class="text-xl font-black tracking-tight md:text-2xl">
                 ShopSphere
             </RouterLink>
@@ -60,28 +70,35 @@ const logout = () => {
                 </RouterLink> -->
 
                 <div v-if="isAuthenticated() && canManage()" class="relative">
-                    <button @click="manageOpen = !manageOpen; accountOpen = false"
+                    <button type="button" @click.stop="manageOpen = !manageOpen; accountOpen = false"
                         class="rounded-lg bg-white/10 px-3 py-2 text-white transition hover:bg-white/20">
                         Manage
                     </button>
 
-                    <div v-if="manageOpen"
-                        class="absolute right-0 mt-3 w-52 overflow-hidden rounded-2xl bg-white p-2 text-slate-950 shadow-xl ring-1 ring-slate-200">
-                        <RouterLink to="/admin/orders" @click="closeMenus"
-                            class="block rounded-xl px-4 py-3 transition hover:bg-slate-100">
-                            Orders
-                        </RouterLink>
+                    <Transition enter-active-class="transition duration-200 ease-out"
+                        enter-from-class="opacity-0 scale-95 -translate-y-2"
+                        enter-to-class="opacity-100 scale-100 translate-y-0"
+                        leave-active-class="transition duration-150 ease-in"
+                        leave-from-class="opacity-100 scale-100 translate-y-0"
+                        leave-to-class="opacity-0 scale-95 -translate-y-2">
+                        <div v-if="manageOpen" @click.stop
+                            class="absolute right-0 mt-3 w-52 origin-top-right overflow-hidden rounded-2xl bg-white p-2 text-slate-950 shadow-xl ring-1 ring-slate-200">
+                            <RouterLink to="/admin/orders" @click="closeMenus"
+                                class="block rounded-xl px-4 py-3 transition hover:bg-slate-100">
+                                Orders
+                            </RouterLink>
 
-                        <RouterLink to="/admin/products" @click="closeMenus"
-                            class="block rounded-xl px-4 py-3 transition hover:bg-slate-100">
-                            Products
-                        </RouterLink>
+                            <RouterLink to="/admin/products" @click="closeMenus"
+                                class="block rounded-xl px-4 py-3 transition hover:bg-slate-100">
+                                Products
+                            </RouterLink>
 
-                        <RouterLink to="/admin/categories" @click="closeMenus"
-                            class="block rounded-xl px-4 py-3 transition hover:bg-slate-100">
-                            Categories
-                        </RouterLink>
-                    </div>
+                            <RouterLink to="/admin/categories" @click="closeMenus"
+                                class="block rounded-xl px-4 py-3 transition hover:bg-slate-100">
+                                Categories
+                            </RouterLink>
+                        </div>
+                    </Transition>
                 </div>
 
                 <div v-if="isAuthenticated() && isMasterAdmin()" class="relative">
@@ -102,7 +119,7 @@ const logout = () => {
                 </RouterLink>
 
                 <div v-if="isAuthenticated()" class="relative">
-                    <button @click="accountOpen = !accountOpen; manageOpen = false"
+                    <button type="button" @click.stop="accountOpen = !accountOpen; manageOpen = false"
                         class="flex items-center gap-2 rounded-lg bg-white/10 px-3 py-2 text-white transition hover:bg-white/20">
                         <span class="hidden max-w-32 truncate md:inline">
                             {{ auth.fullName }}
@@ -110,23 +127,30 @@ const logout = () => {
                         <span class="md:hidden">Account</span>
                     </button>
 
-                    <div v-if="accountOpen"
-                        class="absolute right-0 mt-3 w-56 overflow-hidden rounded-2xl bg-white p-2 text-slate-950 shadow-xl ring-1 ring-slate-200">
-                        <div class="border-b border-slate-100 px-4 py-3">
-                            <p class="font-black mb-2">{{ auth.fullName }}</p>
-                            <p class="mt-1 text-xs text-slate-500">{{ auth.role }}</p>
-                        </div>
-                        <div class="border-b border-slate-100 px-4 py-3">
-                            <RouterLink v-if="isAuthenticated() && isUser()" to="/orders" @click="closeMenus"
-                                class="rounded-lg text-black-300 transition hover:bg-white/10 hover:text-black mt-5">
+                    <Transition enter-active-class="transition duration-200 ease-out"
+                        enter-from-class="opacity-0 scale-95 -translate-y-2"
+                        enter-to-class="opacity-100 scale-100 translate-y-0"
+                        leave-active-class="transition duration-150 ease-in"
+                        leave-from-class="opacity-100 scale-100 translate-y-0"
+                        leave-to-class="opacity-0 scale-95 -translate-y-2">
+                        <div v-if="accountOpen" @click.stop
+                            class="absolute right-0 mt-3 w-56 origin-top-right overflow-hidden rounded-2xl bg-white p-2 text-slate-950 shadow-xl ring-1 ring-slate-200">
+                            <div class="border-b border-slate-100 px-4 py-3">
+                                <p class="font-black">{{ auth.fullName }}</p>
+                                <p class="mt-1 text-xs text-slate-500">{{ auth.role }}</p>
+                            </div>
+
+                            <RouterLink v-if="isUser()" to="/orders" @click="closeMenus"
+                                class="block rounded-xl px-4 py-3 transition hover:bg-slate-100">
                                 My Orders
                             </RouterLink>
+
+                            <button type="button" @click="logout"
+                                class="block w-full rounded-xl px-4 py-3 text-left font-bold text-red-600 transition hover:bg-red-50">
+                                Logout
+                            </button>
                         </div>
-                        <button @click="logout"
-                            class="block w-full rounded-xl px-4 py-3 text-left font-bold text-red-600 transition hover:bg-red-50 mt-5">
-                            Logout
-                        </button>
-                    </div>
+                    </Transition>
                 </div>
             </div>
         </nav>
