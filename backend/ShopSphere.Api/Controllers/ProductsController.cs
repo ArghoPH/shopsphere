@@ -44,7 +44,6 @@ public class ProductsController : ControllerBase
     {
         var product = await _context.Products
             .AsNoTracking()
-            .Include(p => p.Category)
             .Where(p => p.Id == id && p.IsActive)
             .Select(p => new
             {
@@ -61,10 +60,7 @@ public class ProductsController : ControllerBase
 
         if (product == null)
         {
-            return NotFound(new
-            {
-                message = "Product not found"
-            });
+            return NotFound(new { message = "Product not found" });
         }
 
         return Ok(product);

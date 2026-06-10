@@ -71,6 +71,9 @@ onMounted(() => {
 
             <section class="mt-8">
                 <div v-if="loading" class="rounded-3xl bg-white p-10 text-center text-slate-500 shadow-sm">
+                    <div
+                        class="mx-auto mb-4 h-10 w-10 animate-spin rounded-full border-4 border-slate-200 border-t-slate-950">
+                    </div>
                     Loading products...
                 </div>
 

@@ -26,12 +26,7 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 {
     options.UseNpgsql(connectionString, npgsqlOptions =>
     {
-        npgsqlOptions.CommandTimeout(60);
-        npgsqlOptions.EnableRetryOnFailure(
-            maxRetryCount: 3,
-            maxRetryDelay: TimeSpan.FromSeconds(5),
-            errorCodesToAdd: null
-        );
+        npgsqlOptions.CommandTimeout(30);
     })
     .UseSnakeCaseNamingConvention();
 });
