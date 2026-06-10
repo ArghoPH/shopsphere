@@ -2,6 +2,24 @@
 import { onMounted, ref } from "vue";
 import { RouterLink } from "vue-router";
 import api from "../services/api";
+import { GUEST_USER_ID } from "../constants/user";
+
+const cartMessage = ref("");
+
+const addToCart = async (productId) => {
+    try {
+        await api.post("/cart/add", {
+            userId: GUEST_USER_ID,
+            productId,
+            quantity: 1,
+        });
+
+        cartMessage.value = "Product added to cart!";
+    } catch (err) {
+        cartMessage.value = "Failed to add product to cart.";
+        console.error(err);
+    }
+};
 
 const products = ref([]);
 const loading = ref(true);
@@ -35,7 +53,7 @@ onMounted(() => {
                 <div class="hidden items-center gap-8 text-sm text-slate-300 md:flex">
                     <RouterLink to="/" class="transition hover:text-white">Home</RouterLink>
                     <a href="#" class="transition hover:text-white">Products</a>
-                    <a href="#" class="transition hover:text-white">Cart</a>
+                    <RouterLink to="/cart" class="transition hover:text-white">Cart</RouterLink>
                 </div>
             </nav>
 

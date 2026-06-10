@@ -80,8 +80,8 @@ onMounted(() => {
                     </div>
 
                     <div class="mt-8 grid gap-3 sm:grid-cols-2">
-                        <button
-                            class="rounded-2xl bg-slate-950 px-6 py-4 text-sm font-bold text-white transition hover:bg-blue-600">
+                        <button @click="addToCart(product.id)"
+                            class="mt-3 w-full rounded-2xl bg-blue-600 px-5 py-4 text-sm font-bold text-white transition hover:bg-blue-700">
                             Add to Cart
                         </button>
 
