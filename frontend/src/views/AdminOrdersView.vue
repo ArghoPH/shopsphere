@@ -23,7 +23,7 @@ const selectedStatuses = reactive({});
 const statuses = [
     "Processing",
     "Confirmed",
-    "Shipped",
+    "Out for Delivery",
     "Delivered",
     "Cancelled",
 ];
@@ -45,6 +45,26 @@ const fetchOrders = async () => {
     } finally {
         loading.value = false;
     }
+};
+
+const getOrderStatusClass = (status) => {
+    if (status === "Delivered") {
+        return "bg-green-50 text-green-700";
+    }
+
+    if (status === "Cancelled") {
+        return "bg-red-50 text-red-700";
+    }
+
+    if (status === "Shipped") {
+        return "bg-blue-50 text-blue-700";
+    }
+
+    if (status === "Confirmed") {
+        return "bg-purple-50 text-purple-700";
+    }
+
+    return "bg-amber-50 text-amber-700";
 };
 
 const updateOrderStatus = async (orderId) => {
@@ -137,15 +157,11 @@ onMounted(fetchOrders);
                                 </p>
                             </div>
 
-                            <div class="flex flex-wrap items-center gap-2">
-                                <span
-                                    class="inline-flex h-8 items-center rounded-lg bg-blue-50 px-3 text-xs font-bold text-blue-700">
-                                    {{ order.orderStatus }}
-                                </span>
 
-                                <span
-                                    class="inline-flex h-8 items-center rounded-lg bg-amber-50 px-3 text-xs font-bold text-amber-700">
-                                    {{ order.paymentStatus }}
+                            <div class="flex flex-wrap items-center gap-2">
+                                <span class="inline-flex h-8 items-center rounded-lg px-3 text-xs font-bold"
+                                    :class="getOrderStatusClass(order.orderStatus)">
+                                    Order: {{ order.orderStatus }}
                                 </span>
 
                                 <span
@@ -223,6 +239,10 @@ onMounted(fetchOrders);
                                     class="rounded-2xl bg-slate-950 px-6 py-4 text-sm font-bold text-white transition hover:bg-blue-600">
                                     Update Status
                                 </button>
+                            </div>
+                            <div v-if="success"
+                                class="mb-6 rounded-2xl bg-green-50 p-4 text-sm font-bold text-green-700 mt-4">
+                                {{ success }}
                             </div>
                         </div>
                     </div>
