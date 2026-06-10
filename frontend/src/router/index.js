@@ -4,6 +4,7 @@ import ProductDetailsView from "../views/ProductDetailsView.vue";
 import CartView from "../views/CartView.vue";
 import CheckoutView from "../views/CheckoutView.vue";
 import OrdersView from "../views/OrdersView.vue";
+import AdminOrdersView from "../views/AdminOrdersView.vue";
 
 const routes = [
     {
@@ -32,6 +33,11 @@ const routes = [
         path: "/orders",
         name: "orders",
         component: OrdersView,
+    },
+    {
+        path: "/admin/orders",
+        name: "admin-orders",
+        component: AdminOrdersView,
     },
 
 ];
