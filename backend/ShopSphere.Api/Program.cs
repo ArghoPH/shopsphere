@@ -1,13 +1,12 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.IdentityModel.Tokens;
-using System.Text;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using ShopSphere.Api.Data;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
-
 builder.Services.AddHttpClient();
 
 var jwtKey = builder.Configuration["Jwt:Key"];
@@ -40,15 +39,24 @@ builder.Services.AddAuthentication(options =>
 
 builder.Services.AddAuthorization();
 
+var allowedOrigins = builder.Configuration
+    .GetSection("AllowedOrigins")
+    .Get<string[]>() ?? Array.Empty<string>();
+
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("VueApp", policy =>
     {
         policy.WithOrigins(
-                "http://localhost:5173",
-                "http://localhost:5174",
-                "http://127.0.0.1:5173",
-                "http://127.0.0.1:5174"
+                allowedOrigins.Length > 0
+                    ? allowedOrigins
+                    : new[]
+                    {
+                        "http://localhost:5173",
+                        "http://localhost:5174",
+                        "http://127.0.0.1:5173",
+                        "http://127.0.0.1:5174"
+                    }
             )
             .AllowAnyHeader()
             .AllowAnyMethod();
@@ -76,9 +84,6 @@ var app = builder.Build();
 app.UseCors("VueApp");
 
 app.UseAuthentication();
-
-app.UseAuthorization();
-
 app.UseAuthorization();
 
 app.MapControllers();
