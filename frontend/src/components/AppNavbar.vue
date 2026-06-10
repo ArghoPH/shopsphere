@@ -46,6 +46,10 @@ const isMasterAdmin = () => {
                     Admin Orders
                 </RouterLink>
 
+                <RouterLink v-if="isAdmin()" to="/admin/categories" class="transition hover:text-white">
+                    Admin Categories
+                </RouterLink>
+
                 <RouterLink v-if="isAdmin()" to="/admin/products" class="transition hover:text-white">
                     Admin Products
                 </RouterLink>

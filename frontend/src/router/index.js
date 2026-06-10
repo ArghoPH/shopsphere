@@ -10,6 +10,7 @@ import AdminProductsView from "../views/AdminProductsView.vue";
 import LoginView from "../views/LoginView.vue";
 import RegisterView from "../views/RegisterView.vue";
 import MasterUsersView from "../views/MasterUsersView.vue";
+import AdminCategoriesView from "../views/AdminCategoriesView.vue";
 
 import { isAuthenticated, hasRole } from "../stores/auth";
 
@@ -91,6 +92,15 @@ const router = createRouter({
             path: "/products",
             name: "products",
             component: HomeView,
+        },
+        {
+            path: "/admin/categories",
+            name: "admin-categories",
+            component: AdminCategoriesView,
+            meta: {
+                requiresAuth: true,
+                roles: ["Admin", "MasterAdmin"],
+            },
         },
     ],
 });
