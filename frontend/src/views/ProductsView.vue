@@ -4,6 +4,7 @@ import { RouterLink, useRoute, useRouter } from "vue-router";
 import api from "../services/api";
 import AppNavbar from "../components/AppNavbar.vue";
 import { auth, isAuthenticated } from "../stores/auth";
+import { increaseCartCount, fetchCartCount } from "../stores/cartCounter";
 
 const addingProducts = ref({});
 
@@ -54,6 +55,9 @@ const addToCart = async (productId) => {
             productId,
             quantity: 1,
         });
+        increaseCartCount(1);
+        fetchCartCount();
+
 
         productMessages.value = {
             ...productMessages.value,
@@ -61,6 +65,7 @@ const addToCart = async (productId) => {
                 type: "success",
                 text: "Added to cart successfully!",
             },
+
         };
 
         setTimeout(() => {

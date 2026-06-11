@@ -4,6 +4,7 @@ import { RouterLink } from "vue-router";
 import api from "../services/api";
 import { auth } from "../stores/auth";
 import AppNavbar from "../components/AppNavbar.vue";
+import { fetchCartCount } from "../stores/cartCounter";
 
 const cart = ref(null);
 const loading = ref(true);
@@ -28,15 +29,18 @@ const updateQuantity = async (item, quantity) => {
     if (quantity <= 0 || processingItems.value.has(item.id)) return;
 
     try {
-        processingItems.value.add(item.id); // অ্যানিমেশন শুরু
+        processingItems.value.add(item.id);
+
         await api.put(`/cart/items/${item.id}`, {
             quantity,
         });
+
         await fetchCart();
+        await fetchCartCount();
     } catch (err) {
         console.error(err);
     } finally {
-        processingItems.value.delete(item.id); // অ্যানিমেশন শেষ
+        processingItems.value.delete(item.id);
     }
 };
 
@@ -44,17 +48,23 @@ const removeItem = async (itemId) => {
     if (processingItems.value.has(itemId)) return;
 
     try {
-        processingItems.value.add(itemId); // অ্যানিমেশন শুরু
+        processingItems.value.add(itemId);
+
         await api.delete(`/cart/items/${itemId}`);
+
         await fetchCart();
+        await fetchCartCount();
     } catch (err) {
         console.error(err);
     } finally {
-        processingItems.value.delete(itemId); // অ্যানিমেশন শেষ
+        processingItems.value.delete(itemId);
     }
 };
 
-onMounted(fetchCart);
+onMounted(async () => {
+    await fetchCart();
+    await fetchCartCount();
+});
 </script>
 
 <template>
@@ -168,7 +178,7 @@ onMounted(fetchCart);
 
                                         <span
                                             class="w-10 text-center text-xs font-bold text-slate-800 transition-all duration-300">{{
-                                            item.quantity }}</span>
+                                                item.quantity }}</span>
 
                                         <button @click="updateQuantity(item, item.quantity + 1)"
                                             :disabled="processingItems.has(item.id)"
@@ -214,7 +224,7 @@ onMounted(fetchCart);
                             <span class="text-sm font-bold">Total Payable Amount</span>
                             <strong
                                 class="text-2xl font-black text-blue-600 tracking-tight transition-all duration-300">৳{{
-                                cart.totalAmount }}</strong>
+                                    cart.totalAmount }}</strong>
                         </div>
                     </div>
 

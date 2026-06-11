@@ -4,6 +4,7 @@ import { RouterLink, useRouter } from "vue-router";
 import api from "../services/api";
 import { auth, isAuthenticated } from "../stores/auth";
 import AppNavbar from "../components/AppNavbar.vue";
+import { resetCartCount } from "../stores/cartCounter";
 
 const router = useRouter();
 
@@ -61,6 +62,8 @@ const placeOrder = async () => {
             cashOnDeliveryChecked: cashOnDeliveryChecked.value,
             confirmOrder: true,
         });
+
+        resetCartCount();
 
         success.value = response.data.message || "Order placed successfully!";
         showConfirmBox.value = false;
@@ -215,7 +218,7 @@ onMounted(fetchCart);
                         <div v-for="item in cart.items" :key="item.id"
                             class="flex justify-between gap-4 text-xs font-medium text-slate-500">
                             <span class="line-clamp-1 flex-1">{{ item.productName }} <b class="text-slate-800 ml-1">×{{
-                                    item.quantity }}</b></span>
+                                item.quantity }}</b></span>
                             <strong class="text-slate-700">৳{{ item.subtotal }}</strong>
                         </div>
                     </div>

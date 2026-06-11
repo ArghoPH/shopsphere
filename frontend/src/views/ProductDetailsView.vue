@@ -5,6 +5,7 @@ import api from "../services/api";
 import { auth, isAuthenticated } from "../stores/auth";
 import { useRouter } from "vue-router";
 import AppNavbar from "../components/AppNavbar.vue";
+import { increaseCartCount, fetchCartCount } from "../stores/cartCounter";
 
 const router = useRouter();
 const route = useRoute();
@@ -33,6 +34,8 @@ const addToCart = async () => {
             productId: product.value.id,
             quantity: 1,
         });
+        increaseCartCount(quantity.value || 1);
+        fetchCartCount();
 
         cartMessage.value = {
             type: "success",
