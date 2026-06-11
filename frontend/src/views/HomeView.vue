@@ -41,7 +41,7 @@ const slides = ref([
         image: "https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=1200&q=80",
         badge: "🍱 DAILY FRESH",
         btnText: "Shop Groceries",
-        link: "/category"
+        link: "/products"
     },
     {
         title: "Next-Gen Electronics Store",
@@ -57,7 +57,7 @@ const slides = ref([
         image: "https://images.unsplash.com/photo-1441986300917-64674bd600d8?auto=format&fit=crop&w=1200&q=80",
         badge: "🔥 TRENDING NOW",
         btnText: "View Fashion",
-        link: "/category"
+        link: "/products?category=t-shirts"
     }
 ]);
 
