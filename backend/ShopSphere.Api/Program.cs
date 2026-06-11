@@ -188,7 +188,7 @@ app.MapGet("/", () => Results.Content("""
 
         <div class="footer">
             Built with ASP.NET Core Web API, Supabase, Docker and Render.
-            <p>© 2024 ShopSphere. All rights reserved.</p>
+            <p>© 2026 ShopSphere. All rights reserved.</p>
             <p>Developed by <a href="https://github.com/ArghoPH">Argho Chakma</a></p>
         </div>
 
