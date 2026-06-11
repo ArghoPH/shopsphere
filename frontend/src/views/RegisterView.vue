@@ -39,8 +39,9 @@ const register = async () => {
 </script>
 
 <template>
+    <AppNavbar />
     <div class="flex min-h-screen items-center justify-center bg-slate-100 px-6 text-slate-950">
-        <AppNavbar />
+
         <div class="w-full max-w-md rounded-3xl bg-white p-8 shadow-sm ring-1 ring-slate-200">
             <h1 class="text-4xl font-black">Create Account</h1>
             <p class="mt-2 text-slate-500">Register as a customer.</p>
