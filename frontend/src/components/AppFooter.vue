@@ -93,12 +93,12 @@ const currentYear = new Date().getFullYear();
                     </h3>
 
                     <div class="mt-4 grid gap-2.5 text-sm text-slate-400">
-                        <a href="mailto:arghochakma2023@gmail.com"
-                            class="hover:text-blue-400 transition inline-fit w-fit group">
+
+                        <RouterLink to="/support" class="hover:text-blue-400 transition inline-fit w-fit group">
                             <span
                                 class="relative py-0.5 after:absolute after:bottom-0 after:left-0 after:h-[1px] after:w-0 after:bg-blue-400 after:transition-all group-hover:after:w-full">Contact
                                 Support</span>
-                        </a>
+                        </RouterLink>
 
                         <RouterLink to="/login" class="hover:text-blue-400 transition inline-fit w-fit group">
                             <span

@@ -12,6 +12,7 @@ import LoginView from "../views/LoginView.vue";
 import RegisterView from "../views/RegisterView.vue";
 import MasterUsersView from "../views/MasterUsersView.vue";
 import AdminCategoriesView from "../views/AdminCategoriesView.vue";
+import SupportView from "../views/SupportView.vue";
 
 import { isAuthenticated, hasRole } from "../stores/auth";
 
@@ -105,8 +106,23 @@ const router = createRouter({
                 roles: ["Admin", "MasterAdmin"],
             },
         },
+
+        {
+            path: "/support",
+            name: "support",
+            component: SupportView,
+        }
     ],
+
+    scrollBehavior() {
+        return {
+            top: 0,
+            left: 0,
+            behavior: "smooth",
+        };
+    },
 });
+
 
 router.beforeEach((to) => {
     if (to.meta.requiresAuth && !isAuthenticated()) {
