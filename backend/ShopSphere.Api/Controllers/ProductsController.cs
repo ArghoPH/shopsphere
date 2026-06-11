@@ -79,4 +79,37 @@ public class ProductsController : ControllerBase
 
         return Ok(product);
     }
+
+    [HttpGet("trending")]
+    public async Task<IActionResult> GetTrendingProducts()
+    {
+        var products = await _context.Products
+            .AsNoTracking()
+            .Where(p => p.IsActive)
+            .Select(p => new
+            {
+                p.Id,
+                p.CategoryId,
+                CategoryName = p.Category != null ? p.Category.Name : null,
+                CategorySlug = p.Category != null ? p.Category.Slug : null,
+                p.Name,
+                p.Slug,
+                p.Description,
+                p.Price,
+                p.Stock,
+                p.ImageUrl,
+                p.IsActive,
+                p.CreatedAt,
+                SoldQuantity = _context.OrderItems
+                    .Where(oi => oi.ProductId == p.Id)
+                    .Sum(oi => (int?)oi.Quantity) ?? 0
+            })
+            .OrderByDescending(p => p.SoldQuantity)
+            .ThenByDescending(p => p.CreatedAt)
+            .Take(20)
+            .ToListAsync();
+
+        return Ok(products);
+    }
+
 }

@@ -5,6 +5,33 @@ import { ref, onMounted, onUnmounted } from 'vue';
 import { isAuthenticated } from "../stores/auth";
 import api from "../services/api";
 
+
+const trendingProducts = ref([]);
+const trendingLoading = ref(true);
+const trendingScrollRef = ref(null);
+
+const fetchTrendingProducts = async () => {
+    trendingLoading.value = true;
+
+    try {
+        const response = await api.get("/products/trending");
+        trendingProducts.value = response.data;
+    } catch (err) {
+        console.error("Failed to load trending products", err);
+    } finally {
+        trendingLoading.value = false;
+    }
+};
+
+const scrollTrendingProducts = (direction) => {
+    if (!trendingScrollRef.value) return;
+
+    trendingScrollRef.value.scrollBy({
+        left: direction === "left" ? -360 : 360,
+        behavior: "smooth",
+    });
+};
+
 // --- IMAGE SLIDER / ADVERTISEMENT LOGIC ---
 const currentSlide = ref(0);
 const slides = ref([
@@ -48,6 +75,7 @@ onMounted(() => {
     // Auto-slide every 5 seconds
     sliderInterval = setInterval(nextSlide, 5000);
     fetchCategories();
+    fetchTrendingProducts();
 });
 
 onUnmounted(() => {
@@ -71,14 +99,6 @@ const fetchCategories = async () => {
         categoryLoading.value = false;
     }
 };
-
-// --- TRENDING PRODUCTS ---
-const trendingProducts = ref([
-    { id: 1, name: 'Sony Wireless Headphones', price: '৳ 2,500', image: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&w=400&q=80' },
-    { id: 2, name: 'Fresh Organic Apples (1kg)', price: '৳ 350', image: 'https://images.unsplash.com/photo-1560806887-1e4cd0b6cbd6?auto=format&fit=crop&w=400&q=80' },
-    { id: 3, name: 'Smart LED TV Ultra HD', price: '৳ 35,000', image: 'https://images.unsplash.com/photo-1593305841991-05c297ba4575?auto=format&fit=crop&w=400&q=80' },
-    { id: 4, name: 'Men\'s Casual Sneakers', price: '৳ 1,800', image: 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=400&q=80' },
-]);
 </script>
 
 <template>
@@ -207,34 +227,122 @@ const trendingProducts = ref([
                 </div>
             </section>
 
-            <section class="mx-auto max-w-7xl px-4 py-8 pb-16 md:px-8">
-                <div class="flex items-center justify-between mb-6">
-                    <h2 class="text-xl font-bold text-slate-800 md:text-2xl">Trending Right Now <i
-                            class="fas fa-fire text-orange-500 ml-1"></i></h2>
+            <section class="mx-auto max-w-7xl px-4 py-16 md:px-8 bg-slate-50/30 font-sans">
+
+                <div class="mb-8 flex items-end justify-between gap-6 border-b border-slate-100 pb-5">
+                    <div>
+                        <p class="text-xs font-bold uppercase tracking-wider text-blue-600 flex items-center gap-1.5">
+                            <i class="fas fa-fire text-amber-500"></i> Best Sellers
+                        </p>
+
+                        <h2 class="mt-2 text-2xl font-bold text-slate-900 tracking-tight md:text-3xl">
+                            Trending Products
+                        </h2>
+
+                        <p class="mt-1.5 max-w-2xl text-sm text-slate-500">
+                            Most selling products sorted from highest to lowest sales.
+                        </p>
+                    </div>
+
+                    <div class="hidden gap-3 md:flex">
+                        <button type="button" @click="scrollTrendingProducts('left')"
+                            class="flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-600 shadow-sm transition hover:bg-slate-950 hover:text-white hover:border-slate-950 active:scale-95">
+                            <i class="fas fa-chevron-left text-xs"></i>
+                        </button>
+
+                        <button type="button" @click="scrollTrendingProducts('right')"
+                            class="flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-600 shadow-sm transition hover:bg-slate-950 hover:text-white hover:border-slate-950 active:scale-95">
+                            <i class="fas fa-chevron-right text-xs"></i>
+                        </button>
+                    </div>
                 </div>
 
-                <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
-                    <div v-for="product in trendingProducts" :key="product.id"
-                        class="group overflow-hidden rounded-2xl bg-white shadow-sm transition-all hover:shadow-xl border border-slate-200/60">
-                        <div class="relative h-56 overflow-hidden bg-slate-100">
-                            <img :src="product.image" :alt="product.name"
-                                class="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105" />
-                            <div
-                                class="absolute right-3 top-3 rounded-full bg-rose-500 px-2.5 py-1 text-[10px] font-bold text-white uppercase tracking-wider">
-                                Hot
-                            </div>
-                        </div>
-                        <div class="p-4">
-                            <h3
-                                class="text-sm font-semibold text-slate-800 truncate group-hover:text-blue-600 transition-colors">
-                                {{ product.name }}</h3>
-                            <p class="mt-1 text-lg font-black text-blue-600">{{ product.price }}</p>
+                <div v-if="trendingLoading"
+                    class="rounded-3xl bg-white border border-slate-100 p-10 text-center text-sm font-medium text-slate-500 shadow-sm max-w-md mx-auto">
+                    <i class="fas fa-spinner fa-spin mr-2 text-blue-500"></i> Loading trending products...
+                </div>
 
-                            <button
-                                class="mt-3 flex items-center justify-center gap-2 w-full rounded-xl bg-slate-900 py-2.5 text-xs font-bold text-white transition-colors hover:bg-blue-600">
-                                <i class="fas fa-shopping-cart"></i> Add to Cart
-                            </button>
-                        </div>
+                <div v-else-if="trendingProducts.length === 0"
+                    class="rounded-3xl bg-white border border-slate-200 p-10 text-center text-slate-500 shadow-sm max-w-md mx-auto">
+                    <div
+                        class="h-10 w-10 rounded-full bg-slate-50 flex items-center justify-center text-slate-400 mx-auto mb-3">
+                        <i class="fas fa-box-open text-base"></i>
+                    </div>
+                    <span class="text-sm font-medium block">No trending products found.</span>
+                </div>
+
+                <div v-else class="relative">
+                    <div ref="trendingScrollRef"
+                        class="flex gap-6 overflow-x-auto scroll-smooth pb-6 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden snap-x">
+                        <article v-for="product in trendingProducts" :key="product.id"
+                            class="min-w-[280px] max-w-[280px] snap-start overflow-hidden rounded-3xl bg-white/70 border border-white/60 shadow-md shadow-slate-100/50 backdrop-blur-md transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:border-blue-300/30 group relative">
+
+                            <div
+                                class="absolute -top-10 -right-10 w-24 h-24 bg-gradient-to-br from-blue-400/10 to-purple-400/0 rounded-full blur-xl transition duration-500 group-hover:scale-150">
+                            </div>
+
+                            <RouterLink :to="`/products/${product.id}`"
+                                class="block h-full flex flex-col justify-between">
+
+                                <div
+                                    class="relative h-56 m-3 rounded-2xl overflow-hidden bg-slate-50 border border-slate-100 shrink-0">
+                                    <img v-if="product.imageUrl" :src="product.imageUrl" :alt="product.name"
+                                        class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-102" />
+
+                                    <div v-else
+                                        class="flex h-full w-full items-center justify-center bg-slate-50 text-slate-400">
+                                        <i class="fas fa-image text-3xl"></i>
+                                    </div>
+
+                                    <div
+                                        class="absolute left-3 top-3 inline-flex items-center gap-1.5 rounded-xl bg-white/90 px-3 py-1.5 text-xs font-bold text-slate-800 backdrop-blur shadow-sm border border-white/40">
+                                        <i class="fas fa-bolt text-amber-500"></i>
+                                        <span>{{ product.soldQuantity }} sold</span>
+                                    </div>
+                                </div>
+
+                                <div class="p-5 pt-2 flex-1 flex flex-col justify-between">
+                                    <div>
+                                        <p class="text-xs font-bold uppercase tracking-wider text-blue-600">
+                                            {{ product.categoryName || "Product" }}
+                                        </p>
+
+                                        <h3
+                                            class="mt-2 line-clamp-2 text-base font-bold text-slate-950 tracking-tight group-hover:text-blue-600 transition">
+                                            {{ product.name }}
+                                        </h3>
+
+                                        <p class="mt-1.5 line-clamp-2 text-sm leading-relaxed text-slate-500">
+                                            {{ product.description }}
+                                        </p>
+                                    </div>
+
+                                    <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between">
+                                        <p class="text-lg font-bold tracking-tight text-slate-950">
+                                            ৳{{ Number(product.price).toLocaleString() }}
+                                        </p>
+
+                                        <span
+                                            class="rounded-full bg-slate-100 px-3 py-1 text-xs font-medium text-slate-600">
+                                            Stock {{ product.stock }}
+                                        </span>
+                                    </div>
+
+                                </div>
+                            </RouterLink>
+                        </article>
+                    </div>
+
+                    <div class="mt-4 flex justify-center gap-3 md:hidden">
+                        <button type="button" @click="scrollTrendingProducts('left')"
+                            class="flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-600 shadow-sm active:bg-slate-900 active:text-white">
+                            <i class="fas fa-chevron-left text-xs"></i>
+                        </button>
+
+                        <button type="button" @click="scrollTrendingProducts('right')"
+                            class="flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-600 shadow-sm active:bg-slate-900 active:text-white">
+                            <i class="fas fa-chevron-right text-xs"></i>
+                        </button>
                     </div>
                 </div>
             </section>
