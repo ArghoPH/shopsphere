@@ -6,7 +6,6 @@ import { auth, clearAuth } from "../stores/auth";
 import AppNavbar from "../components/AppNavbar.vue";
 
 const router = useRouter();
-
 const users = ref([]);
 const loading = ref(true);
 const saving = ref(false);
