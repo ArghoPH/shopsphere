@@ -223,8 +223,8 @@ onMounted(async () => {
                         <div class="flex justify-between items-center border-t border-slate-100 pt-4 text-slate-900">
                             <span class="text-sm font-bold">Total Payable Amount</span>
                             <strong
-                                class="text-2xl font-black text-blue-600 tracking-tight transition-all duration-300">৳{{
-                                    cart.totalAmount }}</strong>
+                                class="text-2xl font-black text-blue-600 tracking-tight transition-all duration-300">৳
+                                {{ cart.totalAmount }}</strong>
                         </div>
                     </div>
 
