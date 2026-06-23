@@ -10,7 +10,7 @@ const cart = ref(null);
 const loading = ref(true);
 const error = ref("");
 
-// নির্দিষ্ট আইটেম আপডেট বা ডিলিট করার সময় অ্যানিমেশন ট্র্যাক করার জন্য
+// Processing items to avoid duplicate requests
 const processingItems = ref(new Set());
 
 const fetchCart = async () => {
