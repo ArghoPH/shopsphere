@@ -230,7 +230,7 @@ onMounted(fetchCart);
                         </div>
                         <div class="flex justify-between items-baseline pt-2 text-slate-900 border-t border-slate-50">
                             <span class="text-sm font-bold">Aggregate Gross Total</span>
-                            <strong class="text-xl font-black text-blue-600">৳{{ cart.totalAmount }}</strong>
+                            <strong class="text-xl font-black text-blue-600">৳{{ cart.total }}</strong>
                         </div>
                     </div>
                 </aside>
