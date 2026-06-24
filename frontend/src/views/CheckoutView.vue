@@ -149,7 +149,7 @@ onMounted(fetchCart);
 
                         <div>
                             <label class="mb-1.5 block text-xs font-bold uppercase tracking-wider text-slate-400">
-                                Contact Phone Number
+                                Phone Number
                             </label>
                             <div class="relative">
                                 <span class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-sm">
