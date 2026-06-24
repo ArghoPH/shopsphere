@@ -163,7 +163,7 @@ onMounted(fetchCart);
 
                         <div>
                             <label class="mb-1.5 block text-xs font-bold uppercase tracking-wider text-slate-400">
-                                Full Mailing Address
+                                Full Delivery Address
                             </label>
                             <div class="relative">
                                 <span class="absolute left-4 top-4 text-slate-400 text-sm">
