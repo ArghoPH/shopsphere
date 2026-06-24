@@ -276,7 +276,7 @@ onMounted(loadPage);
 
                             <p v-if="uploadingImage"
                                 class="mt-2 rounded-xl bg-blue-50 px-4 py-3 text-sm font-bold text-blue-700">
-                                Uploading image...
+                                Uploading product image...
                             </p>
 
                             <input v-model="form.imageUrl" type="text"
